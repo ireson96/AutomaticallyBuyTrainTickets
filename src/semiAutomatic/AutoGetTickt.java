@@ -31,14 +31,8 @@ public class AutoGetTickt {
 				System.out.println(":(");
 			}
 		}
-		Scanner input = new Scanner(System.in);
-		while(input.nextInt()!=5) {
-			
-		}
-		
-		Thread.sleep(5000);
+		Thread.sleep(3000000);
 		System.out.println("Good Bye!");
-		driver.close();
 	}
 	
 	private boolean buyTicket() {
@@ -107,14 +101,21 @@ public class AutoGetTickt {
 	
 	private boolean trackTicket(String ticketId) {
 		boolean flag = true;
+		String currentUrl = driver.getCurrentUrl();
 		while(flag) {
-			try {
-				driver.findElement(By.id("query_ticket")).click();
-				driver.findElement(By.id(ticketId)).findElement(By.className("no-br")).click();
+			/*try {*/
+			driver.findElement(By.id("query_ticket")).click();
+			driver.findElement(By.id(ticketId)).findElement(By.className("no-br")).click();
+			currentUrl = driver.getCurrentUrl();
+			if(!currentUrl.equals(checkUrl)) {
+				System.out.println("可以购买");				
 				flag = false;
-			} catch (Exception e) {
-				flag = true;
+			}else {
+				System.out.println(driver.findElement(By.id(ticketId)).findElement(By.className("no-br")).getText());
 			}
+			/*} catch (Exception e) {
+				flag = true;
+			}*/
 		}
 		return true;
 	}
