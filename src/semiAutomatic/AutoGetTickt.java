@@ -1,5 +1,6 @@
 package semiAutomatic;
 
+import java.util.List;
 import java.util.Scanner;
 
 import org.openqa.selenium.By;
@@ -13,7 +14,7 @@ public class AutoGetTickt {
 	private String loginUrl = "https://kyfw.12306.cn/otn/login/init";
 	private String checkUrl = "https://kyfw.12306.cn/otn/leftTicket/init";
 	private WebDriver driver;
-	private String[] sit = {"1A","1B","1C","1D","1E"};
+	private static String[] sit = {"1A","1B","1C","1D","1E"};
 	public AutoGetTickt() throws InterruptedException {
 		// TODO Auto-generated constructor stub
 		System.out.println("hello github\nhello Java");
@@ -46,13 +47,21 @@ public class AutoGetTickt {
 				driver.findElement(By.id("normal_passenger_id")).findElement(By.className("check")).click();
 			}
 			driver.findElement(By.id("submitOrder_id")).click();
-			
-			for(int i=0;i<tempConfig.passengers.length;i++) {
-				driver.findElement(By.id(sit[i])).click();
+			Thread.sleep(500);
+			try {
+				WebElement sitSelector = driver.findElement(By.id("erdeng1"));
+				for(int i=0;i<tempConfig.passengers.length;i++) {
+					System.out.println(i+"   "+sit[i]);
+					sitSelector.findElement(By.id(sit[i])).click();
+					
+				}
+			} catch (Exception e) {
+				System.out.println(e);
 			}
 			driver.findElement(By.id("qr_submit_id")).click();
 			return true;
 		} catch (Exception e) {
+			System.out.println(e);
 			return false;
 		}
 
@@ -88,6 +97,7 @@ public class AutoGetTickt {
 			int line = input.nextInt();
 			WebElement needTicket = allticket.findElements(By.tagName("tr")).get((line-1)*2);
 			System.out.println(needTicket.getText());
+			System.out.println(":)");
 			input.close();
 			return needTicket.getAttribute("id");
 		} catch (Exception e) {
@@ -103,19 +113,19 @@ public class AutoGetTickt {
 		boolean flag = true;
 		String currentUrl = driver.getCurrentUrl();
 		while(flag) {
-			/*try {*/
-			driver.findElement(By.id("query_ticket")).click();
-			driver.findElement(By.id(ticketId)).findElement(By.className("no-br")).click();
-			currentUrl = driver.getCurrentUrl();
-			if(!currentUrl.equals(checkUrl)) {
-				System.out.println("可以购买");				
+			try {
+				driver.findElement(By.id("query_ticket")).click();
+				driver.findElement(By.id(ticketId)).findElement(By.className("no-br")).click();
+				currentUrl = driver.getCurrentUrl();
+				if(!currentUrl.equals(checkUrl)) {
+					System.out.println("可以购买");				
+					flag = false;
+				}else {
+					System.out.println(driver.findElement(By.id(ticketId)).findElement(By.className("no-br")).getText());
+				}
+			} catch (Exception e) {
 				flag = false;
-			}else {
-				System.out.println(driver.findElement(By.id(ticketId)).findElement(By.className("no-br")).getText());
 			}
-			/*} catch (Exception e) {
-				flag = true;
-			}*/
 		}
 		return true;
 	}
@@ -153,5 +163,9 @@ public class AutoGetTickt {
 	
 	static public void main(String args[]) throws InterruptedException {
 		new AutoGetTickt();
+		/*for(int i=0;i<tempConfig.passengers.length;i++) {
+			System.out.println(i+"   "+sit[i]);
+			//sitSelector.findElement(By.id(sit[i])).click();
+		}*/
 	}
 }
