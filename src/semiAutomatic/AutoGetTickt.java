@@ -118,7 +118,13 @@ public class AutoGetTickt {
 					System.out.println(driver.findElement(By.id(ticketId)).findElement(By.className("no-br")).getText());
 				}
 			} catch (Exception e) {
-				flag = false;
+				if(!currentUrl.equals(checkUrl)) {
+					System.out.println("可以购买");				
+					flag = false;
+				}else {
+					System.out.println(e);
+				}
+				
 			}
 		}
 		return true;
