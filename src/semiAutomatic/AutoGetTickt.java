@@ -1,6 +1,5 @@
 package semiAutomatic;
 
-import java.util.List;
 import java.util.Scanner;
 
 import org.openqa.selenium.By;
@@ -16,7 +15,6 @@ public class AutoGetTickt {
 	private WebDriver driver;
 	private static String[] sit = {"1A","1B","1C","1D","1E"};
 	public AutoGetTickt() throws InterruptedException {
-		// TODO Auto-generated constructor stub
 		System.out.println("hello github\nhello Java");
 		System.setProperty("webdriver.gecko.driver", ".\\tool\\geckodriver.exe");  
 		//System.setProperty("webdriver.firefox.marionette", ".\\Tools\\geckodriver.exe");
@@ -72,10 +70,6 @@ public class AutoGetTickt {
 		try {
 			driver.get(checkUrl);
 			Scanner input = new Scanner(System.in);
-			/*System.out.println("请输入您的始发站：");
-			String fromStation = input.nextLine();
-			System.out.println("请输入您的终点站：");
-			String toStation = input.nextLine();*/
 			String fromStation = tempConfig.fromStation;
 			String toStation = tempConfig.toStation;
 			driver.findElement(By.id("date_icon_1")).click();
