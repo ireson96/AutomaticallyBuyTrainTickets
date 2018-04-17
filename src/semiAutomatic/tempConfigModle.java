@@ -6,4 +6,5 @@ public class tempConfigModle {
 	static public String fromStation;
 	static public String toStation;
 	static public String[] passengers;
+	static public String ticket;
 }

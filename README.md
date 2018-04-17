@@ -1,2 +1,5 @@
 # AutomaticallyBuyTrainTickets
 Automatically buy train tickets.
+购买前需要新建tempConfig类并完善里面的信息 模板为tempConfigModle.java
+并将System.setProperty函数中设置的火狐浏览器的位置设置为你对应的浏览器的位置
+如果要更换浏览器请使用其他相应的driver

@@ -18,7 +18,7 @@ public class AutoGetTickt {
 		System.out.println("hello github\nhello Java");
 		System.setProperty("webdriver.gecko.driver", ".\\tool\\geckodriver.exe");  
 		//System.setProperty("webdriver.firefox.marionette", ".\\Tools\\geckodriver.exe");
-		System.setProperty("webdriver.firefox.bin","D:\\Program Files\\Mozilla Firefox\\firefox.exe");
+		System.setProperty("webdriver.firefox.bin","D:\\Firefox\\firefox.exe");
 		driver = new FirefoxDriver();
 		
 		if(dologin()) {
@@ -74,6 +74,11 @@ public class AutoGetTickt {
 			String toStation = tempConfig.toStation;
 			driver.findElement(By.id("date_icon_1")).click();
 			System.out.print("请手动选择日期：\n选择完毕？");
+			
+			
+			//driver.findElement(By.xpath(tempConfig.data)).click();
+			
+			
 			input.nextLine();
 			WebElement fromStationText = driver.findElement(By.id("fromStationText"));
 			fromStationText.clear();
@@ -88,12 +93,12 @@ public class AutoGetTickt {
 			driver.findElement(By.id("query_ticket")).click();
 			WebElement allticket = driver.findElement(By.id("queryLeftTable"));
 			System.out.println("请输入您要购买的车次位于当前页面的第几列：");
-			int line = input.nextInt();
-			WebElement needTicket = allticket.findElements(By.tagName("tr")).get((line-1)*2);
-			System.out.println(needTicket.getText());
+			//int line = input.nextInt();
+			//WebElement needTicket = allticket.findElements(By.tagName("tr")).get((line-1)*2);
+			//System.out.println(needTicket.getText());
 			System.out.println(":)");
 			input.close();
-			return needTicket.getAttribute("id");
+			return tempConfig.ticket;//needTicket.getAttribute("id");
 		} catch (Exception e) {
 			driver.close();
 			return null;
@@ -105,19 +110,20 @@ public class AutoGetTickt {
 	
 	private boolean trackTicket(String ticketId) {
 		boolean flag = true;
-		String currentUrl = driver.getCurrentUrl();
+		String currentUrl; //= driver.getCurrentUrl();
 		while(flag) {
 			try {
 				driver.findElement(By.id("query_ticket")).click();
 				driver.findElement(By.id(ticketId)).findElement(By.className("no-br")).click();
 				currentUrl = driver.getCurrentUrl();
 				if(!currentUrl.equals(checkUrl)) {
-					System.out.println("可以购买");				
+					System.out.println("可以购买");
 					flag = false;
 				}else {
 					System.out.println(driver.findElement(By.id(ticketId)).findElement(By.className("no-br")).getText());
 				}
 			} catch (Exception e) {
+				currentUrl = driver.getCurrentUrl();
 				if(!currentUrl.equals(checkUrl)) {
 					System.out.println("可以购买");				
 					flag = false;
