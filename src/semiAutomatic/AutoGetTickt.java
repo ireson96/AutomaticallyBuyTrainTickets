@@ -13,24 +13,31 @@ public class AutoGetTickt {
 	private String loginUrl = "https://kyfw.12306.cn/otn/login/init";
 	private String checkUrl = "https://kyfw.12306.cn/otn/leftTicket/init";
 	private WebDriver driver;
-	private static String[] sit = {"1A","1B","1C","1D","1E"};
+	private static String[] sit = {"1A","1B","1C","1D","1F"};
 	public AutoGetTickt() throws InterruptedException {
 		System.out.println("hello github\nhello Java");
-		System.setProperty("webdriver.gecko.driver", ".\\tool\\geckodriver.exe");  
-		//System.setProperty("webdriver.firefox.marionette", ".\\Tools\\geckodriver.exe");
-		System.setProperty("webdriver.firefox.bin","D:\\Firefox\\firefox.exe");
+		System.setProperty("webdriver.gecko.driver", ".\\tool\\geckodriver.exe");
+		if(!tempConfig.fireFoxPath.equals("")) {
+			System.setProperty("webdriver.firefox.bin",tempConfig.fireFoxPath);
+		}
 		driver = new FirefoxDriver();
-		
 		if(dologin()) {
 			String ticketId = findTicketId();
+			if(ticketId.equals(null)) {
+				System.out.println("获取火车票id失败，请检查输入是否有误");
+				if(tempConfig.isCloseBro) {
+					driver.close();
+				}
+				System.exit(0);
+			}
 			trackTicket(ticketId);
 			if(buyTicket()) {
-				System.out.println("ok");
+				System.out.println("购票成功！");
 			}else {
 				System.out.println(":(");
 			}
+			
 		}
-		Thread.sleep(3000000);
 		System.out.println("Good Bye!");
 	}
 	
@@ -38,11 +45,17 @@ public class AutoGetTickt {
 		try {
 			for(String name : tempConfig.passengers) {
 				WebElement input = driver.findElement(By.id("quickQueryPassenger_id"));
+				input.click();
 				input.clear();
 				input.click();
 				input.sendKeys(name);
 				driver.findElement(By.id("submit_quickQueryPassenger")).click();
 				driver.findElement(By.id("normal_passenger_id")).findElement(By.className("check")).click();
+				try {
+					driver.findElement(By.id("qd_closeDefaultWarningWindowDialog_id")).click();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			driver.findElement(By.id("submitOrder_id")).click();
 			Thread.sleep(500);
@@ -54,12 +67,12 @@ public class AutoGetTickt {
 					
 				}
 			} catch (Exception e) {
-				System.out.println(e);
+				e.printStackTrace();
 			}
 			driver.findElement(By.id("qr_submit_id")).click();
 			return true;
 		} catch (Exception e) {
-			System.out.println(e);
+			e.printStackTrace();
 			return false;
 		}
 
@@ -68,39 +81,46 @@ public class AutoGetTickt {
 	
 	private String findTicketId() {
 		try {
+			System.out.println("find Ticket ID");
 			driver.get(checkUrl);
 			Scanner input = new Scanner(System.in);
 			String fromStation = tempConfig.fromStation;
 			String toStation = tempConfig.toStation;
+			System.out.println("click icon");
 			driver.findElement(By.id("date_icon_1")).click();
-			System.out.print("请手动选择日期：\n选择完毕？");
-			
-			
-			//driver.findElement(By.xpath(tempConfig.data)).click();
-			
-			
+			System.out.print("请手动选择日期：\n选择完毕完毕后请输入回车");
 			input.nextLine();
 			WebElement fromStationText = driver.findElement(By.id("fromStationText"));
-			fromStationText.clear();
 			fromStationText.click();
+			fromStationText.clear();
 			fromStationText.sendKeys(fromStation);
+			Thread.sleep(2000);
 			driver.findElement(By.id("citem_0")).click();
 			WebElement toStationText = driver.findElement(By.id("toStationText"));
-			toStationText.clear();
 			toStationText.click();
+			toStationText.clear();
 			toStationText.sendKeys(toStation);
+			Thread.sleep(2000);
 			driver.findElement(By.id("citem_0")).click();
 			driver.findElement(By.id("query_ticket")).click();
 			WebElement allticket = driver.findElement(By.id("queryLeftTable"));
-			System.out.println("请输入您要购买的车次位于当前页面的第几列：");
-			//int line = input.nextInt();
-			//WebElement needTicket = allticket.findElements(By.tagName("tr")).get((line-1)*2);
-			//System.out.println(needTicket.getText());
+			if(tempConfig.ticket.equals("")) {
+				System.out.println("请输入您要购买的车次位于当前页面的第几列：");
+				int line = input.nextInt();
+				WebElement needTicket = allticket.findElements(By.tagName("tr")).get((line-1)*2);
+				System.out.println(needTicket.getText());
+				tempConfig.ticket = needTicket.getAttribute("id");
+			}
+			
 			System.out.println(":)");
 			input.close();
-			return tempConfig.ticket;//needTicket.getAttribute("id");
+			return tempConfig.ticket;
 		} catch (Exception e) {
-			driver.close();
+			System.out.println("find ticket error\n");
+			e.printStackTrace();
+			if(tempConfig.isCloseBro) {
+				driver.close();
+			}
 			return null;
 		}
 		
@@ -108,9 +128,9 @@ public class AutoGetTickt {
 	
 	
 	
-	private boolean trackTicket(String ticketId) {
+	private boolean trackTicket(String ticketId) throws InterruptedException {
 		boolean flag = true;
-		String currentUrl; //= driver.getCurrentUrl();
+		String currentUrl;
 		while(flag) {
 			try {
 				driver.findElement(By.id("query_ticket")).click();
@@ -159,19 +179,17 @@ public class AutoGetTickt {
 			return true;
 			
 		} catch (Exception e) {
-			driver.close();
+			System.out.println("do login error !");
+			e.printStackTrace();
+			if(tempConfig.isCloseBro) {
+				driver.close();				
+			}
 			return false;
-		} finally {
-			//driver.close();
 		}
 	}
 	
 	
 	static public void main(String args[]) throws InterruptedException {
 		new AutoGetTickt();
-		/*for(int i=0;i<tempConfig.passengers.length;i++) {
-			System.out.println(i+"   "+sit[i]);
-			//sitSelector.findElement(By.id(sit[i])).click();
-		}*/
 	}
 }
